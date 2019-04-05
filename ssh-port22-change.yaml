@@ -9,7 +9,7 @@
       dest: "/etc/ssh/sshd_config"
       regexp: "^Port"
       line: "Port 8875"
-    notify: "Restart sshd"
+   # notify: "Restart sshd"
 
   - name: Setup selinux for alternate SSH port
     seport:
