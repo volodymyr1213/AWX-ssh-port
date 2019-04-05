@@ -30,7 +30,7 @@
 
     - name: Check port ansible port 
       wait_for:
-        port: 22 
+        port: 8875
         state: "started"
         #host: "{{ inventory_hostname }}"
         connect_timeout: 5
@@ -41,7 +41,7 @@
 
     - name: Check port 22
       wait_for:
-        port: 22
+        port: 8875
         state: "started"
         #host: "{{ inventory_hostname }}" 
         connect_timeout: 5
