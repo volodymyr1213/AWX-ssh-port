@@ -1,0 +1,59 @@
+---
+- name: ssh-port changing
+  hosts: 
+  #gather_facts: no
+  remote_user: root
+  tasks:
+    - name: Create a security group
+      ec2_group:
+        name: "{{ security_group }}"
+        description: The webservers security group
+        region: "{{ region }}"
+        #aws_access_key: "{{ aws_access_key }}"
+        #aws_secret_key: "{{ aws_secret_key }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 8875
+            to_port: 8875
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+
+    - name: Check port ansible port 
+      wait_for:
+        port: 22 
+        state: "started"
+        host: "{{ inventory_hostname }}"
+        connect_timeout: 5
+        timeout: 5
+      #delegate_to: "localhost"
+      ignore_errors: "yes"
+      register: ssh_port
+
+    - name: Check port 22
+      wait_for:
+        port: 22
+        state: "started"
+        host: "{{ inventory_hostname }}" 
+        connect_timeout: 5
+        timeout: 5
+      #delegate_to: 
+      ignore_errors: "yes"
+      register: ssh_port_default
+      when: 
+        - ssh_port is defined 
+        - ssh_port.state is undefined
+
+    - name: Set SSH port to 8875
+      set_fact:
+       ansible_port: 8875
+      when: ssh_port_default.state is defined
